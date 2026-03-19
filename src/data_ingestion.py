@@ -1,21 +1,25 @@
 import pandas as pd
+import yaml
 from sklearn.datasets import load_diabetes
+from logger import get_logger
 
-def load_and_process_data():
-    # Load dataset
+def load_config():
+    with open("config/config.yaml") as f:
+        return yaml.safe_load(f)
+
+def data_ingestion():
+    config = load_config()
+    logger = get_logger(config["logging"]["log_file"])
+
+    logger.info("Starting data ingestion")
+
     data = load_diabetes(as_frame=True)
     df = data.frame
 
-    # Save raw data
-    df.to_csv("data/raw/diabetes.csv", index=False)
+    df.to_csv(config["data"]["raw_path"], index=False)
+    df.to_csv(config["data"]["processed_path"], index=False)
 
-    # Simple preprocessing (example)
-    df_processed = df.copy()
-
-    # Save processed data
-    df_processed.to_csv("data/processed/diabetes_processed.csv", index=False)
-
-    print("Data ingestion completed")
+    logger.info("Data ingestion completed successfully")
 
 if __name__ == "__main__":
-    load_and_process_data()
+    data_ingestion()
